@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">WeatherApp</string>
+    <string name="peijing_weather">北京天氣</string>
 </resources>
