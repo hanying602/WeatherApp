@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">WeatherApp</string>
     <string name="peijing_weather">北京天氣</string>
+    <string name="peijing">北京</string>
+    <string name="pm2_5">PM2.5</string>
+
+
 </resources>
