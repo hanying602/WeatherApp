@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         if (view.getId() == R.id.title_city_manager) {
             Intent i = new Intent(this, SelectCity.class);
+            i.putExtra("current_city",cityTv.getText().toString());
             startActivityForResult(i, 1);
         }
         if (view.getId() == R.id.title_update_btn) {

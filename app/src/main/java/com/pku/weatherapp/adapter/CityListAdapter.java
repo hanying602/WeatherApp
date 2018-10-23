@@ -23,6 +23,10 @@ public class CityListAdapter extends BaseAdapter {
         this.dataList = dataList;
     }
 
+    public void setDataList(List<City> dataList){
+        this.dataList = dataList;
+    }
+
     @Override
     public int getCount() {
         return dataList.size();

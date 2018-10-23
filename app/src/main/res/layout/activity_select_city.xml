@@ -38,18 +38,32 @@
             android:gravity="center" />
     </RelativeLayout>
 
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title_top">
-        
+        android:layout_below="@id/title_top"
+        android:background="@android:color/white">
+
+        <com.pku.weatherapp.customview.EditTextWrapper
+            android:id="@+id/search_city"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="hello world"
+            android:textColor="@android:color/black"
+            android:textSize="20sp" />
+
         <ListView
             android:id="@+id/title_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/search_city"
             android:background="@android:color/white"
             android:divider="@android:color/darker_gray"
-            android:dividerHeight="1dp"/>
+            android:dividerHeight="1dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp" />
     </RelativeLayout>
 
 </RelativeLayout>
