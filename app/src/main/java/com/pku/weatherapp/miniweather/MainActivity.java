@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,8 +15,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.pku.weatherapp.R;
+import com.pku.weatherapp.adapter.WeatherPredictionAdapter;
 import com.pku.weatherapp.bean.TodayWeather;
 import com.pku.weatherapp.util.NetUtil;
+import com.rd.PageIndicatorView;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -28,6 +31,8 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -39,6 +44,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private TextView cityTv, timeTv, humidityTv, weekTv, pmDataTv, pmQualityTv, temperatureTv, climateTv, windTv, cityNameTv;
     private ImageView weatherImg, pmImg;
+
+    private ViewPager predictViewPager;
+    private WeatherPredictionAdapter weatherPredictionAdapter;
+    private PageIndicatorView pageIndicatorView;
+    private List<TodayWeather> predictWeatherList;
+
 
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
@@ -63,9 +74,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mCitySelect.setOnClickListener(this);
         checkNetwork();
         initView();
+        initViewpager();
     }
 
-    void initView() {
+    private void initView() {
         cityNameTv = findViewById(R.id.title_city_name);
         cityTv = findViewById(R.id.city);
         timeTv = findViewById(R.id.time);
@@ -88,6 +100,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         temperatureTv.setText("N/A");
         climateTv.setText("N/A");
         windTv.setText("N/A");
+    }
+    private void initViewpager(){
+        predictViewPager = findViewById(R.id.prediction_viewpager);
+        pageIndicatorView = findViewById(R.id.prediction_indicator);
+        predictWeatherList = new ArrayList<>();
+        weatherPredictionAdapter = new WeatherPredictionAdapter(MainActivity.this, predictWeatherList);
+        predictViewPager.setAdapter(weatherPredictionAdapter);
+        pageIndicatorView.setViewPager(predictViewPager);
+        pageIndicatorView.setCount(weatherPredictionAdapter.getCount());
     }
 
     private void checkNetwork() {
@@ -281,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return todayWeather;
     }
 
-    void updateTodayWeather(TodayWeather todayWeather) {
+    private void updateTodayWeather(TodayWeather todayWeather) {
         cityNameTv.setText(todayWeather.getCity() + "天氣");
         cityTv.setText(todayWeather.getCity());
         timeTv.setText(todayWeather.getUpdatetime() + "發布");
