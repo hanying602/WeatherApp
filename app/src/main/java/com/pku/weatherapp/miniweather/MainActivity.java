@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Xml;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +21,7 @@ import com.pku.weatherapp.bean.TodayWeather;
 import com.pku.weatherapp.util.NetUtil;
 import com.rd.PageIndicatorView;
 
+import org.json.JSONArray;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -33,6 +35,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import fr.arnaudguyon.xmltojsonlib.XmlToJson;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -185,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         response.append(str);
                     }
                     String responseStr = response.toString();
-                    Log.d(TAG, "queryWeatherCode: " + responseStr);
+                    Log.d(TAG, "queryWeatherCode: xml" + responseStr);
 
                     todayWeather = parseXML(responseStr);
                     if (todayWeather != null) {
@@ -208,6 +214,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private TodayWeather parseXML(String xmlData) {
+
         TodayWeather todayWeather = null;
         int windDirectionCount = 0;
         int windPowerCount = 0;
@@ -215,6 +222,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int highCount = 0;
         int lowCount = 0;
         int typeCount = 0;
+
+        predictWeatherList.clear();
+
+        try {
+            XmlToJson xmlToJson = new XmlToJson.Builder(xmlData).build();
+            JSONObject jsonObject = xmlToJson.toJson();
+            Log.d("myWeather json", jsonObject.toString());
+            JSONArray predictJsonArray = jsonObject.optJSONObject("resp").optJSONObject("forecast").optJSONArray("weather");
+            for ( int i = 1 ; i < predictJsonArray.length(); i++ ){
+                JSONObject weatherJsOb = predictJsonArray.getJSONObject(i);
+                TodayWeather weather = new TodayWeather();
+                weather.setDate(weatherJsOb.optString("date",""));
+                weather.setHigh(weatherJsOb.optString("high","").substring(2).trim());
+                weather.setLow(weatherJsOb.optString("low","").substring(2).trim());
+                weather.setType(weatherJsOb.optJSONObject("day").optString("type",""));
+                weather.setFengli(weatherJsOb.optJSONObject("day").optString("fengli",""));
+                predictWeatherList.add(weather);
+            }
+
+
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+
 
         try {
             XmlPullParserFactory fac = XmlPullParserFactory.newInstance();
@@ -315,7 +346,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         windTv.setText("風力:" + todayWeather.getFengli());
         updatePM25Image(todayWeather.getPm25());
         updateWeatherImage(todayWeather.getType());
-
+        weatherPredictionAdapter.notifyDataSetChanged();
+        pageIndicatorView.setCount(weatherPredictionAdapter.getCount());
         Toast.makeText(MainActivity.this, "更新成功!", Toast.LENGTH_SHORT).show();
     }
 
